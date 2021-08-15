@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>registration page</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+
+<body class="container" style="margin-top: 50px;">
+
+	<% if (messages.error) { %>
+	<div class="alert alert-danger" role="alert"><%- messages.error %></div>
+	<% } %>
+	<% if (messages.success) { %>
+	<div class="alert alert-success" role="alert"><%- messages.success %></div>
+	<% } %>
+
+    <div class="card"> 
+    	<div class="card-header">
+			Registration
+		</div>
+        <div class="card-body">
+            <form action="/login/register" method="post">
+                <div class="form-group">
+                    <label>User Name:</label>
+                    <input type="text" class="form-control" name="uname" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="password" class="form-control" name="upwd" autocomplete="off">
+                </div>
+				<div class="form-group">
+                    <label>Remark:</label>
+                    <input type="text" class="form-control" name="remark" autocomplete="off">
+                </div>
+				
+                <div class="form-group">
+                    <input type="submit" class="btn btn-info" value="Confirm"/>
+                </div>
+            </form>
+        </div>
+    </div>
+	<a href="/index.html"> HOME | </a>
+	<a href="/login"> LOGIN </a>
+</body>
+</html>	
+
+<!--<body>
+<div class="container mt-5">
+    <div class="row mt-5">
+        <div class="col-3"></div>
+        <div class="col-6">
+            <form action="/login/register" method="post">
+                <div class="form-group" style="text-align: center">
+                    <h2 style="letter-spacing: 30px;">Registration</h2>
+                </div>
+                <div class="form-group">
+                    <label for="uname">username</label>
+                    <input type="text" class="form-control" id="uname" placeholder="please enter user name">
+                </div>
+                <div class="form-group">
+                    <label for="upwd">password</label>
+                    <input type="password" class="form-control" id="upwd" placeholder="Please enter a password">
+                </div>
+                <!-- <div class="form-group mb-5">
+                    <small id="register" class="form-text text-muted float-right">
+                        <a href="register">log in</a>
+                    </small>
+                </div> 
+                <div class="form-group">
+                    <input type="submit" class="btn btn-info" value="Confirm"/>
+                </div>
+            </form>
+        </div>
+        <div class="col-3"></div>
+    </div>
+</div>
+<!--
+<script src="./../common/jquery-3.3.1.js"></script>
+<script>
+    $(function(){
+        $("#nousername").hide();
+        $("#nopwd").hide();
+    })
+    function register(){
+        let username,pwd;
+        username=$("#username").val();
+        pwd=$("#pwd").val();
+
+        if(/^\w{4,10}$/.test(username)){
+        }else{
+            $("nousername").css("display","block");
+            $("#nousername").show();
+
+        }
+        if(/^\w{4,10}$/.test(pwd)){
+        }else{
+            $("#nopwd").show();
+            $("#block").css("margin-top","25px");
+            return;
+        }
+        let xhr=window.XMLHttpRequest?new XMLHttpRequest:new ActiveXObject("Microsfot.XMLHTTP");
+        let data="";
+
+        xhr.onreadystatechange=function(){
+            data=JSON.parse(xhr.response);
+            if(xhr.readyState==4){
+                if(data.status==200){
+                    alert("registration success");
+                    location.href="./../index.html";
+                }else{
+                    alert("registration failed");
+                }
+            }
+        }
+        xhr.open("post",'/register');
+        xhr.setRequestHeader("content-type","application/x-www-form-urlencoded");
+        xhr.send(`username=${username}&pwd=${pwd}`);
+
+    }
+    $("#btn1")[0].addEventListener("click",register,true);
+</script> -->
+</body>
+</html>

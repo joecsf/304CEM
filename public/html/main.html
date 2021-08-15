@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>home page</title>
+    <link rel="stylesheet" href="./../bootstrap/css/bootstrap.css">
+    <style>
+        .plussub {
+            width:120px;
+            height:32px;
+            border:1px solid #ccc;
+            background:#fff;
+            margin:0 auto;
+        }
+        .plussub span {
+            width:30px;
+            height:30px;
+            float:left;
+            text-align:center;
+            line-height:30px;
+            cursor:pointer;
+        }
+        .plussub .sub {
+            border-right:1px solid #ccc;
+        }
+        .plussub .plus {
+            border-left:1px solid #ccc;
+        }
+        .plussub input[type="text"] {
+            border:none;
+            height:30px;
+            width:56px;
+            text-align:center;
+            float:left;
+            line-height:30px;
+        }
+    </style>
+</head>
+<body style="background-color: #d7f5ff">
+<div class="form-group  mt-5" style="text-align: center">
+    <h2 style="letter-spacing: 30px;">Product information</h2>
+  <!--  <button type="button" id="btn3" class="btn btn-danger">Add all to cart</button>
+    <button type="button" id="btn4" class="btn btn-primary">Add to shopping cart in bulk</button>
+    <button type="button" id="btn5" class="btn btn-info">Uncheck to add to cart</button> -->
+</div>
+<div class="container mt-3">
+    <div class="row" style="text-align: center;background-color: rgba(255,255,255,0.8);">
+        <table class="table border" >
+            <thead class="thead-dark">
+            <tr>
+           	<!--	<th scope="col">select</th> -->
+                <th scope="col">product name</th>
+            <!--    <th scope="col">amount of goods</th> -->
+                <th scope="col">quality</th> 
+                <th scope="col">unit price</th>
+                <th scope="col">operating     </th>
+            </tr>
+            </thead>
+            <tbody id="show">
+            <tr>
+             <!--   <td><input type="radio"></td> -->
+                <td scope="col">Wangzai Steamed Bun</td>
+                <td scope="col">100</td>
+                <td scope="col">
+                    <div class="plussub">
+                        <span class="sub" onclick="sub(1)">&ndash;</span>
+                        <input class="yzquantity1" onblur="yzquantity(1)" type="text" value="1">
+                        <span class="plus" onclick="plus(1)">&#43;</span>
+                    </div>
+                </td>
+                <td scope="col">2.5￥</td>
+                <td scope="col">
+                    <button type="button" class="btn btn-success">add to Shopping Cart</button>
+                    <button type="button" class="btn btn-danger">delete</button>
+                </td>
+            </tr>
+            </tbody> 
+        </table>
+        <div class="container mt-2 mb-2 mr-2">
+            <button type="button" class="btn btn-primary  float-right" id="btn1">my shopping cart</button>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="showGoodInfo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="showUserInfoLabel">Product details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="container">
+                <div class="row">
+                    <div class="col-1"></div>
+                    <div class="col-10">
+                        <div class="form-group">
+                            <label>product name</label>
+                            <span  class="form-control" id="gN"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>amount of goods</label>
+                            <span  class="form-control" id="gNum"></span>
+                        </div>
+						<div class="form-group">
+                            <label>Commodity price</label>
+                            <span  class="form-control" id="gP"></span>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">determine</button>
+                        </div>
+                    </div>
+                    <div class="col-1"></div>
+                </div>
+            </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+    <script src="./../common/jquery-3.3.1.js"></script>
+    <script src="./../bootstrap/js/bootstrap.bundle.js"></script>
+    <script>
+        var count=0;
+        <!--let cid=randomNumber();-->
+		let cid=randomNumber();
+        localStorage.setItem("cid",cid);
+		
+        let arr1=[];//Save the goodId selected in batch
+        $(function(){
+            setuid();
+            getList();
+            createC();
+            $(document).on("click",".btn6",confirmBtn);
+            $(document).on("click",".btn-add",addBtn);
+            $(document).on("click",".btn-search",searchBtn);
+        })
+
+        const setuid=function(){
+            let  username= localStorage.getItem("username");
+            $.ajax({
+                type: "get",
+                url: "/setuid",
+                data: {"username":username},
+                success: function (data) {
+                    if(data.status==200){
+                    localStorage.setItem("uid",data.data[0].uid)
+                    }else if(data.status==400){
+                        console.log("setuid error")
+                    }
+                }
+            })
+            .done(function(){
+
+            })
+        }
+
+        const createC=function(){
+            let uId= localStorage.getItem("uid");
+            $.ajax({
+                type: "get",
+                url: "/createC",
+                data: {"uId":uId,"cId":cid},
+                success: function (data) {
+
+                    if(data.status==400){
+                         console.log("createC error")
+                    }
+                }
+            })
+        }
+
+        const getList=function(){
+            $.ajax({
+                type : 'get',
+                url : '/getList',
+                success:function(data){
+                    if(data.status==200){
+                        let arr=data.data;
+                        if(arr.length==0){
+                            alert("The database has no data! abc");
+                        }else{
+                            $("#show").html("");
+                            for(let i in arr){
+                                let obj=arr[i];
+                                count=obj.goodNum;
+                                $("#show").append(`
+                                 <tr>
+                                    <!--   <td><input type="radio" data-id="${obj.goodId}"></td> -->
+                                       <td scope="col">${obj.goodName}</td>
+									<!--   <td scope="col">${obj.goodNum}</td> -->
+                                    <td scope="col"> 	
+									<input data-id="${obj.goodID}"  onKeypress="return (1)" placeholder="0" type="number" min="0"/> 
+									<!--	<input data-id="${obj.count}"  onKeypress="return (document.getElementByID("${obj.count}").value;)" placeholder="0" type="number" min="0"/> -->
+                                    <button type="button" class="btn btn-primary btn6" >OK</button>
+									                                      </td> 
+ 										<td scope="col">HK$ ${obj.price}</td>
+                                        <td scope="col">
+                                            <button type="button" class="btn btn-success btn-add"  data-id="${obj.goodId}">Add to cart</button>
+                                        <!--    <button type="button" class="btn btn-danger btn-search" data-id="${obj.goodId}"">View</button> -->
+                                        </td>
+                                  </tr>`)
+                            }addEventListener
+
+                        }
+                    }else if(data.status=400){
+                        alert("There is a problem with the product database connection!");
+                    }
+                }
+            })
+        }
+
+        const addBtn=(e)=>{
+            let id=$(e.target).attr("data-id");
+
+            $.ajax({
+                type:"get",
+                url:"/saveCartInfo",
+                data:{"goodId":id,"cartId":cid,"count":count},
+             	success:function(data){
+                    if(data.status==200){
+						alert("Successfully added to the shopping cart!");
+                    }else if(data.status==400){
+						alert(data);
+						alert("Cargo information connection failed!");
+                    }
+                }
+            })
+        }
+
+        const searchBtn=(e)=>{
+            $("#showGoodInfo").modal("show");
+            let id=$(e.target).attr("data-id");
+            $.ajax({
+                type:"get",
+                url:"/getGoodDetailInfo",
+                data:{"goodId":id},
+                success:function(data){
+                    let arr=data.data;
+                    console.log(arr);
+                    $("#gN").text(arr[0].goodName);
+                    $("#gNum").text(arr[0].goodNum);
+                    $("#gP").text(arr[0].price+"￥");
+                }
+            })
+
+        }
+
+        $("#btn1")[0].addEventListener("click",function(){
+            location.href='./cart.html';
+        },true)
+
+        //All add to shopping cart
+        $("#btn3")[0].addEventListener("click",function(){
+            let gooddata=[];
+            let co=0;
+            $.ajax({
+                type:"get",
+                url:"/selectAll",
+                success:function(data){
+                    gooddata.push(data.data[1]);
+                }
+            })
+            .done(function(){
+                $.ajax({
+                    type:"get",
+                    url:"/addAll",
+                    data:{"gooddata":gooddata[0],"length":gooddata[0].length,"cid":cid},
+                    success:function(data){
+                       if(data.status==200){
+                           selectAll();
+                           alert("All successfully added!");
+
+                       }
+                    }
+                })
+            })
+        },true)
+
+        $("#btn4")[0].addEventListener("click",function(){
+            $("input[type|=radio]:checked").each(function(e){
+                let id=$(this).attr("data-id");
+                arr1.push(id);
+            })
+            console.log(arr1.length);
+            $.ajax({
+                type:"get",
+                url:"/selectSome",
+                data:{"arr1":arr1,"length":arr1.length,"cid":cid},
+                success:function(data){
+                    if(data.status==200){
+                        $('input[type|=radio]').prop('checked',false);
+                        alert("Successfully added in bulk!");
+                    }
+                }
+            })
+        },true)
+
+        $("#btn5")[0].addEventListener("click",function(){
+            $("input[name='radio']").each(function(){
+                if($(this).attr("checked")) {
+                    let id=$(this).attr("data-id");
+                    arr1.push(id);
+                    $(this).removeAttr("checked");
+                }
+                else {
+                    $(this).attr("checked","true");
+                }
+            })
+            cancelAll();
+        },true)
+
+		
+        function confirmBtn(){
+            count=0;
+            count=$($(this)[0]).prev().val();
+        }
+
+        function  randomNumber() {
+            const now = new Date()
+            let seconds = now.getSeconds()
+            return now.getFullYear().toString()+ seconds + (Math.round(Math.random() * 10 + 23)).toString()
+        }
+
+        function selectAll(){
+            $('input[type|=radio]').attr('checked','checked');
+        }
+
+        function cancelAll(){
+            $('input[type|=radio]').removeAttr('checked');
+        }
+
+    </script>
+</body>
+</html>

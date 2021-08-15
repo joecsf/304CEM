@@ -1,0 +1,107 @@
+ <!DOCTYPE html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <title>Title</title>
+</head>
+<body style="background-color: #d7f5ff">
+
+<div class="container mt-5">
+  <div>
+      <div class="row">
+          <div class="col-3"></div>
+          <div class="col-6"  style="padding-bottom:100px;text-align: center;background-color: rgba(255,255,255,0.6);">
+              <div class="form-group  mt-5" style="text-align: center">
+                  <h2 style="letter-spacing: 30px;">Shopping cart settlement</h2>
+                  <link rel="stylesheet" href="./../bootstrap/css/bootstrap.css">
+              </div>
+              <form>
+                  <div class="form-row">
+                      <div class="form-group col-md-6">
+                          <label for="uname">user name</label>
+                          <span class="form-control" id="uname"></span>
+                      </div>
+                      <div class="form-group col-md-6">
+                          <label for="sex">User gender</label>
+                          <span class="form-control" id="sex"></span>
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <label>Shopping cart items</label>
+                      <table class="table table-bordered">
+                          <thead>
+                          <tr>
+                              <td scope="col">product name</td>
+                              <td scope="col">amount of goods</td>
+                              <td scope="col">Commodity price</td>
+                          </tr>
+                          </thead>
+                          <tbody id="show1">
+
+                          </tbody>
+                      </table>
+                  </div>
+                  <div class="form-group">
+                      <label>total amount (HK$)</label>
+                      <span  class="form-control" id="total"></span>
+                  </div>
+					<div class="form-group">
+					<td scope="col"> <button type="button" onclick="location.href='http://localhost:8083';" >confirm and logout</button> </td>
+					</div>
+			  </form>
+          </div>
+          <div class="col-3"></div>
+      </div>
+  </div>
+</div>
+
+<script src="./../common/jquery-3.3.1.js"></script>
+<script>
+   $(function(){
+       getTotal();
+   })
+
+   const getTotal=function(){
+       let uid=localStorage.getItem("uid");
+       let cid=localStorage.getItem("cid");
+       $("#show2").html("")
+       $.ajax({
+           type : 'get',
+           url : '/getTotal',
+           data:{"uid":uid,"cid":cid},
+           success:function(data){
+
+               $("#show1").html("");
+
+               if(data.status==200){
+                   console.log(data);
+                   let arr=data.data[1];
+                   $("#uname").text(data.data[0][0].uname);
+                   $("#sex").text(data.data[0][0].sex);
+                   let count=0;
+                   for(let i in arr){
+                       let obj=arr[i];
+
+                       $("#show1").append(`
+                                <tr>
+                                      <td scope="col">${obj.goodName}</td>
+                                       <td scope="col">${obj.goodqutity}</td>
+                                       <td scope="col">HK$ ${obj.price}</td>
+                                 </tr>`);
+                       count+=obj.goodqutity*obj.price;
+
+                   }
+                   $("#total").text(count);
+               }
+               else if(data.status=400){
+                   alert("There is a problem with the database connection!");
+
+               }
+           }
+       })
+   }
+   
+</script>
+</body>
+</html>
